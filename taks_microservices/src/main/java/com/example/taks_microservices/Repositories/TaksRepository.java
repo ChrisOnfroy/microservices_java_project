@@ -8,7 +8,7 @@ import java.util.Optional;
 
 public interface TaksRepository extends JpaRepository<TaksEntity, Long> {
 
-    TaksEntity getreferenceByUuid(String uuid);
+    TaksEntity getReferenceByUuid(String Uuid);
 
     Optional<TaksEntity> findByUuid(String uuid);
 
