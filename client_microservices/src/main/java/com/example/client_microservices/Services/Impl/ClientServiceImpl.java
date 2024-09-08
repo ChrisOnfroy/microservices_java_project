@@ -18,7 +18,6 @@ public class ClientServiceImpl implements ClientService {
     @Autowired
     private final ClientRepository clientRepository;
 
-
     @Override
     public ClientEntity findByUuid(String uuid) {
         return clientRepository.findByUuid(uuid).orElseThrow(()-> new RuntimeException("Client not Found"));

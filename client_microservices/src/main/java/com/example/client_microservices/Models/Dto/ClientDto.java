@@ -19,4 +19,7 @@ public class ClientDto {
     public Boolean status;
 
     public String email;
+
+    public String rol;
+
 }

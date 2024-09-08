@@ -1,13 +1,15 @@
 package com.example.client_microservices.Models.Entity;
 
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
+import java.util.ArrayList;
+import java.util.List;
+
+@Builder
 @Entity
 @Setter
 @Getter
@@ -28,5 +30,8 @@ public class RolEntity {
     @Column(updatable = false, nullable = false, length = 100, unique = true)
     private String String;
 
-
+    @Builder.Default
+    @OneToMany(mappedBy="rol", cascade = CascadeType.MERGE, fetch = FetchType.LAZY, orphanRemoval = true)
+    @JsonBackReference
+    private List<ClientEntity> clientEntityList = new ArrayList<>();
 }
