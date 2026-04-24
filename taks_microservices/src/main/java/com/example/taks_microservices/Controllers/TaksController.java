@@ -4,39 +4,63 @@ package com.example.taks_microservices.Controllers;
 import com.example.taks_microservices.Models.Dto.TaksDto;
 import com.example.taks_microservices.Models.Entity.TaksEntity;
 import com.example.taks_microservices.Services.TaksService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RequiredArgsConstructor
 @RestController
-@RequestMapping("/v1/taks")
+@RequestMapping({"/v1/tasks", "/v1/taks"})
 public class TaksController {
 
-    @Autowired
     private final TaksService taksService;
 
+    @GetMapping
+    public ResponseEntity<List<TaksDto>> findAll() {
+        List<TaksDto> tasks = taksService.findAll()
+                .stream()
+                .map(this::toDto)
+                .toList();
+        return ResponseEntity.ok(tasks);
+    }
+
     @PostMapping
-    public ResponseEntity<Object> createTaks(@RequestBody TaksDto taksDto){
-
-        TaksEntity taksEntity = new TaksEntity();
-
-        taksEntity.setName(taksDto.getName());
-        taksEntity.setDescription(taksDto.getDescription());
-        taksEntity.setPoints(taksDto.getPoints());
-        taksEntity.setDeathline(taksDto.getDeathline());
-
-        taksService.createTaks(taksEntity);
-
-        return new ResponseEntity<>(taksEntity, HttpStatus.CREATED);
-
+    public ResponseEntity<TaksDto> createTaks(@Valid @RequestBody TaksDto taksDto) {
+        TaksEntity savedTask = taksService.createTaks(taksDto);
+        return new ResponseEntity<>(toDto(savedTask), HttpStatus.CREATED);
     }
 
     @GetMapping("/{uuid}")
-    public ResponseEntity<TaksEntity>findByUuid(@PathVariable String uuid){
-        TaksEntity taks = taksService.findByuuid(uuid);
-        return new ResponseEntity<>(taks, HttpStatus.OK);
+    public ResponseEntity<TaksDto> findByUuid(@PathVariable String uuid) {
+        TaksEntity taks = taksService.findByUuid(uuid);
+        return ResponseEntity.ok(toDto(taks));
+    }
+
+    @PutMapping("/{uuid}")
+    public ResponseEntity<TaksDto> updateTaks(@PathVariable String uuid, @Valid @RequestBody TaksDto taksDto) {
+        TaksEntity updatedTask = taksService.updateTaks(uuid, taksDto);
+        return ResponseEntity.ok(toDto(updatedTask));
+    }
+
+    @DeleteMapping("/{uuid}")
+    public ResponseEntity<Void> deleteTaks(@PathVariable String uuid) {
+        taksService.deleteTaks(uuid);
+        return ResponseEntity.noContent().build();
+    }
+
+    private TaksDto toDto(TaksEntity task) {
+        return new TaksDto(
+                task.getUuid(),
+                task.getName(),
+                task.getDescription(),
+                task.getPoints(),
+                task.getStatus(),
+                task.getCreationDate(),
+                task.getDeadline()
+        );
     }
 }

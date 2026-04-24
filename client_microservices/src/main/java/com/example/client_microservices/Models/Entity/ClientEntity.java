@@ -28,22 +28,25 @@ public class ClientEntity {
     @Column(updatable = false, nullable = false, length = 100, unique = true)
     private String uuid;
 
-    @Column(updatable = false, nullable = false, length = 100, unique = true)
+    @Column(nullable = false, length = 100, unique = true)
     private String username;
 
-    @Column(updatable = false, nullable = false, length = 100, unique = true)
+    @Column(nullable = false, length = 255)
     private String password;
 
     @CreationTimestamp
+    @Column(nullable = false, updatable = false)
     private LocalDate creationDate;
 
+    @Builder.Default
+    @Column(nullable = false)
     private Boolean status = true;
 
-    @Column(updatable = false, nullable = false, length = 300, unique = true)
+    @Column(nullable = false, length = 300, unique = true)
     private String email;
 
     @ManyToOne
-    @JoinColumn(name = "rol", nullable = false)
+    @JoinColumn(name = "rol_id", nullable = false)
     private RolEntity rol;
 
 }

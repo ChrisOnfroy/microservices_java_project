@@ -1,52 +1,66 @@
 package com.example.client_microservices.Controllers;
 
-import com.example.client_microservices.Exceptions.RolExceptions;
 import com.example.client_microservices.Models.Dto.ClientDto;
 import com.example.client_microservices.Models.Entity.ClientEntity;
-import com.example.client_microservices.Models.Entity.RolEntity;
-import com.example.client_microservices.Repositories.RolRepository;
 import com.example.client_microservices.Services.ClientService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RequiredArgsConstructor
 @RestController
-@RequestMapping("/v1/client")
+@RequestMapping({"/v1/clients", "/v1/client"})
 public class ClientController {
-    @Autowired
+
     private final ClientService clientService;
 
-    @Autowired
-    private final RolRepository rolRepository;
+    @GetMapping
+    public ResponseEntity<List<ClientDto>> findAll() {
+        List<ClientDto> clients = clientService.findAll()
+                .stream()
+                .map(this::toDto)
+                .toList();
+        return ResponseEntity.ok(clients);
+    }
 
     @PostMapping
-    public ResponseEntity<Object> CreateClient(@RequestBody ClientDto clientDto){
-
-        RolEntity rol = rolRepository.getReferenceByUuid(clientDto.getRol());
-
-        if (rol == null ){
-            throw new RolExceptions("Rol whit Uuid " + clientDto.getRol() + "Not found");
-        }
-
-        ClientEntity clientTosave = new ClientEntity();
-
-        clientTosave.setRol(rol);
-        clientTosave.setUsername(clientDto.getUsername());
-        clientTosave.setPassword(clientDto.getPassword());
-        clientTosave.setEmail(clientDto.getEmail());
-
-
-        clientService.CreateRol(clientTosave);
-
-        return new ResponseEntity<>(clientTosave, HttpStatus.CREATED);
+    public ResponseEntity<ClientDto> createClient(@Valid @RequestBody ClientDto clientDto) {
+        ClientEntity savedClient = clientService.createClient(clientDto);
+        return new ResponseEntity<>(toDto(savedClient), HttpStatus.CREATED);
     }
 
     @GetMapping("/{uuid}")
-    public ResponseEntity<ClientEntity>findByUuid(@PathVariable String uuid){
+    public ResponseEntity<ClientDto> findByUuid(@PathVariable String uuid) {
         ClientEntity client = clientService.findByUuid(uuid);
-        return new ResponseEntity<>(client, HttpStatus.OK);
+        return ResponseEntity.ok(toDto(client));
+    }
+
+    @PutMapping("/{uuid}")
+    public ResponseEntity<ClientDto> updateClient(@PathVariable String uuid, @Valid @RequestBody ClientDto clientDto) {
+        ClientEntity updatedClient = clientService.updateClient(uuid, clientDto);
+        return ResponseEntity.ok(toDto(updatedClient));
+    }
+
+    @DeleteMapping("/{uuid}")
+    public ResponseEntity<Void> deleteClient(@PathVariable String uuid) {
+        clientService.deleteClient(uuid);
+        return ResponseEntity.noContent().build();
+    }
+
+    private ClientDto toDto(ClientEntity client) {
+        return new ClientDto(
+                client.getUuid(),
+                client.getUsername(),
+                null,
+                client.getCreationDate(),
+                client.getStatus(),
+                client.getEmail(),
+                client.getRol().getUuid(),
+                client.getRol().getName()
+        );
     }
 }

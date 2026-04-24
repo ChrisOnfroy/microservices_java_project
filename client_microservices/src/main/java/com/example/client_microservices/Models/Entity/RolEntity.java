@@ -1,7 +1,6 @@
 package com.example.client_microservices.Models.Entity;
 
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
@@ -27,11 +26,11 @@ public class RolEntity {
     private String uuid;
 
 
-    @Column(updatable = false, nullable = false, length = 100, unique = true)
-    private String String;
+    @Column(nullable = false, length = 100, unique = true)
+    private String name;
 
     @Builder.Default
-    @OneToMany(mappedBy="rol", cascade = CascadeType.MERGE, fetch = FetchType.LAZY, orphanRemoval = true)
-    @JsonBackReference
+    @OneToMany(mappedBy = "rol", fetch = FetchType.LAZY)
+    @JsonIgnore
     private List<ClientEntity> clientEntityList = new ArrayList<>();
 }

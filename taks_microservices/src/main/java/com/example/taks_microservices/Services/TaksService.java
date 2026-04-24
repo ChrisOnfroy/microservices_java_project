@@ -3,14 +3,17 @@ package com.example.taks_microservices.Services;
 import com.example.taks_microservices.Models.Dto.TaksDto;
 import com.example.taks_microservices.Models.Entity.TaksEntity;
 
+import java.util.List;
+
 public interface TaksService {
 
-    TaksEntity findByuuid(String uuid);
+    List<TaksEntity> findAll();
 
-    TaksEntity createTaks(TaksEntity taks);
+    TaksEntity findByUuid(String uuid);
 
-    TaksEntity UpdateTaks(String uuid, TaksDto taksDto);
+    TaksEntity createTaks(TaksDto taksDto);
 
-    boolean DeleteTaks(String uuid);
+    TaksEntity updateTaks(String uuid, TaksDto taksDto);
 
+    void deleteTaks(String uuid);
 }

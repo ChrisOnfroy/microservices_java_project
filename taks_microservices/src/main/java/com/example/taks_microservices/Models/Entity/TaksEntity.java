@@ -24,23 +24,26 @@ public class TaksEntity {
     @JsonIgnore
     private Long id;
 
-    @Column(nullable = false, length = 100, unique = true)
+    @Column(nullable = false, length = 100, unique = true, updatable = false)
     private String uuid;
 
-    @Column(nullable = false, length = 100, unique = true)
+    @Column(nullable = false, length = 100)
     private String name;
 
     @Column(nullable = false, length = 300)
     private String description;
 
-    @Column(nullable = false, length = 300)
-    private String points;
+    @Column(nullable = false)
+    private Integer points;
 
+    @Column(nullable = false)
     private Boolean status = true;
 
     @CreationTimestamp
+    @Column(nullable = false, updatable = false)
     private LocalDate creationDate;
 
-    private LocalDate deathline;
+    @Column(nullable = false)
+    private LocalDate deadline;
 
 }

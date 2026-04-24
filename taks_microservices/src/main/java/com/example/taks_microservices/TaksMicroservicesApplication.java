@@ -10,4 +10,6 @@ public class TaksMicroservicesApplication {
 		SpringApplication.run(TaksMicroservicesApplication.class, args);
 	}
 
+
+
 }
